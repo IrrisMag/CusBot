@@ -1,0 +1,7 @@
+Topic:chat-bot for customer support
+an automated chat-bot to handle customers queries
+Key features:
+	-pre-programmed FAQs(frequently asked questions)
+	-integration with customer db
+	-escalation to human support when needed
+	-multi-language support
