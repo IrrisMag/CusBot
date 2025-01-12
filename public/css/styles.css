@@ -1145,6 +1145,10 @@ html {
   margin: 0px;
 }
 
+.m-5 {
+  margin: 1.25rem;
+}
+
 .my-4 {
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -1156,6 +1160,10 @@ html {
 
 .mt-4 {
   margin-top: 1rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
 }
 
 .block {
@@ -1387,6 +1395,10 @@ html {
   padding: 1.5rem;
 }
 
+.p-10 {
+  padding: 2.5rem;
+}
+
 .px-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
@@ -1429,6 +1441,11 @@ html {
 
 .align-middle {
   vertical-align: middle;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
 }
 
 .text-3xl {
@@ -1547,6 +1564,11 @@ html {
 
 .hover\:bg-\[\#111827E6\]:hover {
   background-color: #111827E6;
+}
+
+.hover\:bg-blue-600:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1));
 }
 
 .hover\:bg-gray-700:hover {
