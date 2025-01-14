@@ -1,4 +1,4 @@
-const Customer = require('../lib/models/customer.model');
+import  Customer from '../lib/models/customer.model';
 
 
 const { body, validationResult } = require('express-validator');

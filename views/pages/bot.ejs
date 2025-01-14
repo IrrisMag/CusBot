@@ -1,95 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('../partials/head') %>
-<body class="bg-gray-100">
-  <div class="p-10">
-    <h1 class="text-2xl mb-4"><%= title %></h1>
-    <div id="chatbot-container">
-      <!-- component -->
-<button
-class="fixed bottom-4 right-4 inline-flex items-center justify-center text-sm font-medium disabled:pointer-events-none disabled:opacity-50 border rounded-full w-16 h-16 bg-black hover:bg-gray-700 m-0 cursor-pointer border-gray-200 bg-none p-0 normal-case leading-5 hover:text-gray-900"
-type="button" aria-haspopup="dialog" aria-expanded="false" data-state="closed">
-<svg xmlns=" http://www.w3.org/2000/svg" width="30" height="40" viewBox="0 0 24 24" fill="none"
-  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-  class="text-white block border-gray-200 align-middle">
-  <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z" class="border-gray-200">
-  </path>
-</svg>
-</button>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support Chat-Bot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="max-w-md mx-auto my-10 bg-white rounded-lg shadow-md">
+        <!-- Welcome Screen -->
+        <div class="p-6">
+            <h2 class="text-xl font-bold text-gray-800">Welcome to Customer Support!</h2>
+            <p class="text-gray-600">How can we help you today?</p>
+            <div class="mt-4">
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Track Order</button>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Account Info</button>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Contact Support</button>
+            </div>
+        </div>
+        
+        <!-- Chat Interface -->
+        <div class="p-6 border-t">
+            <div id="chatHistory" class="h-64 overflow-y-auto bg-gray-50 p-4 rounded-md">
+                <!-- Static Chat History for testing -->
+            </div>
+            <div class="flex items-center mt-4">
+                <input id="chatInput" type="text" class="flex-grow p-2 border rounded-md focus:outline-none" placeholder="Type your message...">
+                <button id="sendBtn" class="bg-blue-500 text-white px-4 py-2 rounded-md ml-2 hover:bg-blue-600">Send</button>
+            </div>
+        </div>
 
+        <!-- FAQ Section -->
+        <div class="p-6 border-t">
+            <h3 class="text-lg font-bold text-gray-800">FAQs</h3>
+            <div class="mt-2">
+                <input type="text" class="w-full p-2 border rounded-md focus:outline-none" placeholder="Search FAQs...">
+            </div>
+            <ul class="mt-4">
+                <!-- Static FAQ for testing -->
+                <li class="mb-2">
+                    <details class="bg-gray-50 p-3 rounded-md">
+                        <summary class="cursor-pointer text-blue-600 font-medium">How can I reset my password?</summary>
+                        <p class="mt-2 text-gray-600">You can reset your password by clicking on the "Forgot Password" link on the login page.</p>
+                    </details>
+                </li>
+            </ul>
+        </div>
 
-<div style="box-shadow: 0 0 #0000, 0 0 #0000, 0 1px 2px 0 rgb(0 0 0 / 0.05);"
-class="fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 bg-white p-6 rounded-lg border border-[#e5e7eb] w-[440px] h-[634px]">
+        <!-- Language Selection -->
+        <div class="p-6 border-t">
+            <label for="language" class="block text-gray-800 font-medium">Select Language:</label>
+            <select id="language" class="w-full mt-2 p-2 border rounded-md focus:outline-none">
+                <!-- Static Language Selection -->
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+            </select>
+        </div>
 
-<!-- Heading -->
-<div class="flex flex-col space-y-1.5 pb-6">
-  <h2 class="font-semibold text-lg tracking-tight">Chatbot</h2>
-  <p class="text-sm text-[#6b7280] leading-3">Powered by Mendable and Vercel</p>
-</div>
+        <!-- Escalation Option -->
+        <div class="p-6 border-t">
+            <button class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 w-full">Talk to a Human</button>
+        </div>
 
+        <script>
+          document.getElementById('sendBtn').addEventListener('click', function() {
+            console.log('Send button clicked');
+            // Get user input from the input field
+            const userMessage = document.getElementById('chatInput').value;
+        
+            if (userMessage.trim() === "") return; // Don't send empty messages
+        
+            // Clear the input field
+            document.getElementById('chatInput').value = "";
+        
+            // Update chat history with user message
+            updateChatHistory('You', userMessage);
+        
+            // Send message to the server (simulated)
+            sendMessageToServer(userMessage);
+          });
 
+          // Allow sending message using Enter key
+          document.getElementById('chatInput').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+              document.getElementById('sendBtn').click();
+            }
+          });
+        
+          function updateChatHistory(sender, message) {
+            console.log(`Updating chat history: ${sender} says ${message}`);
+            // Create a new message element
+            const chatHistory = document.getElementById('chatHistory');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('my-4', 'text-sm', 'flex', sender === 'You' ? 'justify-end' : 'justify-start');
+            
+            const messageBubble = document.createElement('div');
+messageBubble.classList.add('p-3', 'rounded-md');
+if (sender === 'You') {
+    messageBubble.classList.add('bg-blue-500', 'text-white');
+} else {
+    messageBubble.classList.add('bg-gray-300');
+}
+            messageBubble.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            
+            messageElement.appendChild(messageBubble);
+            chatHistory.appendChild(messageElement);
+        
+            // Scroll to the bottom smoothly
+            chatHistory.scroll({ top: chatHistory.scrollHeight, behavior: 'smooth' });
+          }
+        
+          function sendMessageToServer(message) {
+  console.log('Sending message to server:', message);
 
+  const apiEndpoint = 'http://localhost:3000/api/bot'; // Replace with your server's URL
 
-<!-- Chat Container -->
-<div class="pr-4 h-[474px]" style="min-width: 100%; display: table;">
-  <!-- Chat Message AI -->
-  <div class="flex gap-3 my-4 text-gray-600 text-sm flex-1"><span
-      class="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
-      <div class="rounded-full bg-gray-100 border p-1"><svg stroke="none" fill="black" stroke-width="1.5"
-          viewBox="0 0 24 24" aria-hidden="true" height="20" width="20" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z">
-          </path>
-        </svg></div>
-    </span>
-    <p class="leading-relaxed"><span class="block font-bold text-gray-700">AI </span>Hi, how can I help you today?
-    </p>
-  </div>
+  // Send POST request to the server with the message
+  fetch(apiEndpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message })
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Handle response from the server
+    const botMessage = data.response;
+    updateChatHistory('AI', botMessage);
+  })
+  .catch(error => {
+    console.error('Error sending message to server:', error);
+    updateChatHistory('AI', 'Sorry, something went wrong.');
+  });
+}
 
-  <!--  User Chat Message -->
-  <div class="flex gap-3 my-4 text-gray-600 text-sm flex-1"><span
-      class="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
-      <div class="rounded-full bg-gray-100 border p-1"><svg stroke="none" fill="black" stroke-width="0"
-          viewBox="0 0 16 16" height="20" width="20" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z">
-          </path>
-        </svg></div>
-    </span>
-    <p class="leading-relaxed"><span class="block font-bold text-gray-700">You </span>fewafef</p>
-  </div>
-  <!-- Ai Chat Message  -->
-  <div class="flex gap-3 my-4 text-gray-600 text-sm flex-1"><span
-      class="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
-      <div class="rounded-full bg-gray-100 border p-1"><svg stroke="none" fill="black" stroke-width="1.5"
-          viewBox="0 0 24 24" aria-hidden="true" height="20" width="20" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z">
-          </path>
-        </svg></div>
-    </span>
-    <p class="leading-relaxed"><span class="block font-bold text-gray-700">AI </span>Sorry, I couldn't find any
-      information in the documentation about that. Expect answer to be less accurateI could not find the answer to
-      this in the verified sources.</p>
-  </div>
-</div>
-<!-- Input box  -->
-<div class="flex items-center pt-0">
-  <form class="flex items-center justify-center w-full space-x-2">
-    <input
-      class="flex h-10 w-full rounded-md border border-[#e5e7eb] px-3 py-2 text-sm placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#9ca3af] disabled:cursor-not-allowed disabled:opacity-50 text-[#030712] focus-visible:ring-offset-2"
-      placeholder="Type your message" value="">
-    <button
-      class="inline-flex items-center justify-center rounded-md text-sm font-medium text-[#f9fafb] disabled:pointer-events-none disabled:opacity-50 bg-black hover:bg-[#111827E6] h-10 px-4 py-2">
-      Send</button>
-  </form>
-</div>
-
-</div>
+        </script>
     </div>
-  </div>
-  <%- include('../partials/script') %>
 </body>
 </html>
-
-

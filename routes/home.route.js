@@ -1,14 +1,14 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
 
 
-const { showHome, showBot } = require('../controllers/home.controller');
+import { showHome } from '../controllers/home.controller.js';
 
 router.get('/', showHome);
 
-router.get('/bot', showBot);
 
 
 
-module.exports = router;
+
+export default router;

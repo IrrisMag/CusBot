@@ -1,12 +1,22 @@
-const express = require('express');
-const morgan = require('morgan');
-const session = require('express-session');
-const flash = require('connect-flash');
+//const express = require('express');
+import express from 'express';
+import morgan from 'morgan';
+import session from 'express-session';
+import flash from 'connect-flash';
 
-require('dotenv').config();
-require('./lib/dbConnect');
+import productRouter from './routes/product.route.js';
+import botRouter from './routes/bot.route.js';
 
-const homeRouter = require('./routes/home.route');
+//require('dotenv').config();
+//require('./lib/dbConnect');
+
+import 'dotenv/config';
+import './lib/dbConnect.js';
+
+
+//const homeRouter = require('./routes/home.route.js');
+import homeRouter from './routes/home.route.js';
+
 
 const app = express();
 
@@ -28,7 +38,11 @@ app.use(
 app.use(flash());
 
 
-app.use('/home', homeRouter);
+app.use('/api/home', homeRouter);
+
+app.use('/api/bot',botRouter);
+
+app.use("/api/products",productRouter);
 
 app.get('*', (req, res) => {
   res.status(404).render('index', { 
