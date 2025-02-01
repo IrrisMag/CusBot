@@ -1,46 +1,70 @@
-import Product from '../lib/models/product.model.js';
+
+import fs from 'fs/promises';
 
 export const showHome = async (req, res) => {
   try {
-    const products = await Product.find(); // Fetch products from the database
-    res.render('pages/home', { title: 'Customers', products }); // Pass products to the template
+
+    res.render('index', { title: 'CusBot'}); 
+    
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
   }
 };
 
-export const showBot = async (req, res) => {
 
-    const chatHistory = []; // Initialize empty or fetch from a database
-    const faqs = [
-        { question: 'How do I track my order?', answer: 'You can track your order by clicking on "Track Order" button above.' },
-        { question: 'How do I reset my password?', answer: 'Click on "Account Info" and then select "Reset Password".' },
-    ]; // Fetch FAQs from a database or static list
-    const languages = [
-        { code: 'en', name: 'English', selected: true },
-        { code: 'es', name: 'Spanish', selected: false },
-        { code: 'fr', name: 'French', selected: false },
-    ];
+export const handleChatbotQuery = async (req, res) => {
+  try {
+    // Read FAQs from the JSON file
+    const faqsData = await fs.readFile('faqs.json', 'utf8');
+    const faqs = JSON.parse(faqsData).faqs;
 
-    res.render('pages/bot', { title: 'Chat Support', chatHistory, faqs, languages });
-  };
+    // Extract message and language from the request body
+    const { message, language = 'en' } = req.body;
 
-export const responseBot= async (req, res) => {
-  const userMessage = req.body.message;
+    // Validate input
+    if (!message) {
+      return res.status(400).json({ error: 'Message is required' });
+    }
 
-  // Example: Responding based on user input
-  let botResponse = '';
-  if (userMessage.toLowerCase().includes('track')) {
-    botResponse = 'You can track your order through the "Track Order" section.';
-  } else if (userMessage.toLowerCase().includes('account')) {
-    botResponse = 'For account-related inquiries, please visit the "Account Info" section.';
-  } else if (userMessage.toLowerCase().includes('order')) {
-    botResponse = 'I can help you track your order. Please provide the order ID.';
-  } else {
-    botResponse = 'I am here to assist you. How can I help?';
+    // Validate language (optional)
+    const supportedLanguages = ['en', 'es', 'fr']; // Add supported languages
+    if (!supportedLanguages.includes(language)) {
+      return res.status(400).json({ error: 'Unsupported language' });
+    }
+
+    // Convert the query to lowercase and split into words
+    const query = message.toLowerCase();
+    const queryWords = query.split(' ');
+
+    // Find a matching FAQ
+    const faq = faqs.find((f) => {
+      const question = f.question[language].toLowerCase();
+      // Check if any word in the query matches the FAQ question
+      return queryWords.some((word) => question.includes(word));
+    });
+
+    // Respond with the answer or a default message
+    let response;
+    if (query.includes('hello') || query.includes('hi')) {
+      response = {
+        en: "Hello! How can I assist you today?",
+        es: "¡Hola! ¿En qué puedo ayudarte hoy?",
+        fr: "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+      }[language];
+    } else if (faq) {
+      response = faq.answer[language];
+    } else {
+      response = {
+        en: "Sorry, I couldn't find an answer to your question.",
+        es: "Lo siento, no pude encontrar una respuesta a tu pregunta.",
+        fr: "Désolé, je n'ai pas trouvé de réponse à votre question.",
+      }[language];
+    }
+
+    res.json({ response });
+  } catch (error) {
+    console.error('Error handling chatbot query:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
-  //res.json({ response: 'This is a response from the server' });
-  res.json({ response: botResponse });
 };
-
