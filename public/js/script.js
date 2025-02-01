@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const messageDiv = document.createElement('div');
       messageDiv.className = `mb-2 ${sender === 'user' ? 'text-end' : 'text-start'}`;
       messageDiv.innerHTML = `
-        <span class="d-inline-block p-2 rounded ${sender === 'user' ? 'bg-primary text-white' : 'bg-light'}">
+        <span class="d-inline-block p-3 rounded ${sender === 'user' ? 'bg-primary text-white' : 'bg-green'}">
           ${message}
         </span>
       `;
@@ -27,6 +27,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (message) {
         addMessage('user', message); // Display user's message in the chat
         textbox.value = ''; // Clear the input field
+  
+        // Show loading indicator
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'text-start mb-2';
+        loadingDiv.innerHTML = `
+          <span class="d-inline-block p-3 rounded bg-light">
+            <i class="fas fa-spinner fa-spin"></i> Thinking...
+          </span>
+        `;
+        chatContainer.appendChild(loadingDiv);
   
         try {
           // Send the message to the backend
@@ -46,9 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
           }
   
           const data = await response.json();
+          chatContainer.removeChild(loadingDiv); // Remove loading indicator
           addMessage('bot', data.response); // Display bot's response in the chat
         } catch (error) {
           console.error('Error sending message:', error);
+          chatContainer.removeChild(loadingDiv); // Remove loading indicator
           addMessage('bot', "Sorry, I'm having trouble connecting to the server. Please try again later.");
         }
       }
