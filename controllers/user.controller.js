@@ -14,9 +14,8 @@ export const validateSignup = [
 
 
 export const signup = async (req, res) => {
+
   const validationErrors = validationResult(req);
-
-
   if (!validationErrors.isEmpty()) {
     const errors = validationErrors.array();
     req.flash('errors', errors);
@@ -25,43 +24,29 @@ export const signup = async (req, res) => {
   }
 
   const { email, password } = req.body;
+  const query = { email };
+  const existingUser = await User.findOne(query);
 
-  try {
-    // Check if the email is already registered
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
-      req.flash('data', req.body);
-      req.flash('info', {
-        message: 'Email is already registered. Try to login instead.',
-        type: 'error',
-      });
-      return res.redirect('/auth/signup');
-    }
-
-    // Hash the password
+  if (existingUser) {
+    req.flash('data', req.body);
+    req.flash('info', {
+      message: 'Email is already registered. Try to login instead',
+      type: 'error'
+    })
+    res.redirect('/auth/signup');
+  } else {
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create a new user
-    const user = { email, password: hashedPassword };
+    const user = {
+      email,
+      password: hashedPassword,
+    };
     const result = await User.create(user);
-
-    // Set the user ID in the session
     req.session.userId = result._id;
-
-    // Redirect to the home page with a success message
     req.flash('info', {
       message: 'Signup Successful',
-      type: 'success',
+      type: 'success'
     });
     res.redirect('/api/home');
-  } catch (error) {
-    console.error('Signup error:', error);
-    req.flash('info', {
-      message: 'An error occurred during signup. Please try again.',
-      type: 'error',
-    });
-    res.redirect('/auth/signup');
   }
 };
 
@@ -74,12 +59,11 @@ export const validateLogin = [
 
 
 export const login = async (req, res) => {
-  const validationErrors = validationResult(req);
+  if (req.session.userId) return res.redirect('/api/home'); // Prevent unnecessary login
 
- 
+  const validationErrors = validationResult(req);
   if (!validationErrors.isEmpty()) {
-    const errors = validationErrors.array();
-    req.flash('errors', errors);
+    req.flash('errors', validationErrors.array());
     req.flash('data', req.body);
     return res.redirect('/auth/login');
   }
@@ -87,48 +71,30 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    
     const user = await User.findOne({ email });
-
     if (!user) {
-      req.flash('info', {
-        message: 'Email is not registered.',
-        type: 'error',
-      });
+      req.flash('info', { message: 'Email not registered.', type: 'error' });
       req.flash('data', req.body);
       return res.redirect('/auth/login');
     }
 
-    
     const passwordMatch = await bcrypt.compare(password, user.password);
-
-    if (passwordMatch) {
-     
-      req.session.userId = user._id;
-
-      
-      req.flash('info', {
-        message: 'Login Successful',
-        type: 'success',
-      });
-      return res.redirect('/api/home');
-    } else {
-      req.flash('info', {
-        message: 'Wrong Password',
-        type: 'error',
-      });
+    if (!passwordMatch) {
+      req.flash('info', { message: 'Wrong Password', type: 'error' });
       req.flash('data', req.body);
       return res.redirect('/auth/login');
     }
+
+    req.session.userId = user._id;
+    req.flash('info', { message: 'Login Successful', type: 'success' });
+    res.redirect('/api/home');
   } catch (error) {
     console.error('Login error:', error);
-    req.flash('info', {
-      message: 'An error occurred during login. Please try again.',
-      type: 'error',
-    });
+    req.flash('info', { message: 'Login failed. Try again.', type: 'error' });
     res.redirect('/auth/login');
   }
 };
+
 
 
 export const logout = (req, res) => {

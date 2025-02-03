@@ -1,6 +1,8 @@
 import express from 'express';
 import morgan from 'morgan';
 import session from 'express-session';
+import fs from 'fs';
+import https from 'https';
 import flash from 'connect-flash';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -15,30 +17,27 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Set up view engine
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Middleware
+
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 
-// Session configuration
+
 app.use(
   session({
-    secret: process.env.AUTH_SECRET,
-    saveUninitialized: true,
+    secret: process.env.SESSION_SECRET || 'default-secret',
     resave: false,
-    cookie: {
-      secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
-    },
+    saveUninitialized: false,
+    cookie: { secure: process.env.NODE_ENV === 'production' }, // Use secure cookies in production
   })
 );
 
-// Flash messages
+
 app.use(flash());
 app.use((req, res, next) => {
   res.locals.info = req.flash('info')[0]; 
@@ -46,11 +45,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
+
 app.use('/auth', userRouter); 
 app.use('/api', verifyUser, homeRouter); 
 
-// 404 Route
+
 app.get('*', (req, res) => {
   res.status(404).render('404', {
     title: 'Not Found',
@@ -64,8 +63,11 @@ app.use((err, req, res, next) => {
   res.status(500).render('error', { message: 'Something went wrong!' });
 });
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const options = {
+  key: fs.readFileSync('/etc/nginx/ssl/localhost.key'),
+  cert: fs.readFileSync('/etc/nginx/ssl/localhost.crt'),
+};
+
+https.createServer(options, app).listen(3000, () => {
+  console.log('Server running on https://localhost:3000');
 });

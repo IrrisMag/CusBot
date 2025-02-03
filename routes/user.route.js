@@ -4,6 +4,7 @@ const router = express.Router();
 
 
 import { redirectAuthenticated } from '../lib/middleware.js';
+
 import {
   validateSignup,
   signup,
@@ -61,9 +62,9 @@ router.post('/translate', async (req, res) => {
   }
 });
 
-// Default Route
+
 router.get('/', (req, res) => {
-  res.redirect('/login'); // Redirect to login page by default
+  res.redirect('/login'); 
 });
 
 export default router;
