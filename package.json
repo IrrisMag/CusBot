@@ -7,13 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "tailwindcss -o public/css/styles.css --watch"
+    "build": "tailwindcss -o public/css/styles.css --minify"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "are-we-there-yet": "^4.0.2",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
@@ -25,13 +26,18 @@
     "express-rate-limit": "^7.5.0",
     "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
+    "gauge": "^5.0.2",
+    "glob": "^11.0.1",
     "i18next": "^24.2.1",
     "i18next-fs-backend": "^2.6.0",
     "i18next-http-middleware": "^3.7.1",
+    "inflight": "^1.0.6",
     "mongodb": "^6.12.0",
     "mongoose": "^8.9.4",
     "morgan": "^1.10.0",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "npmlog": "^7.0.1",
+    "rimraf": "^6.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
