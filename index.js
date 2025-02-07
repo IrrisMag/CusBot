@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
+import mongoose from 'mongoose';
 import flash from 'connect-flash';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -27,16 +28,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 
 // Session management
+const clientPromise = connectDB().then(() => mongoose.connection.getClient());
 app.use(
   session({
-      secret: process.env.SESSION_SECRET,
+      secret: process.env.AUTH_SECRET,
       resave: false,
       saveUninitialized: false,
       cookie: { secure: process.env.NODE_ENV === 'production' },
       store: MongoStore.create({
-          mongoUrl: process.env.MONGO_URI,
-          ttl: 14 * 24 * 60 * 60, // Session expires in 14 days
-      }),
+        clientPromise,
+        ttl: 14 * 24 * 60 * 60,
+    })
   })
 );
 
