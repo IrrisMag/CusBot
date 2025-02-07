@@ -5,7 +5,7 @@ import flash from 'connect-flash';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import 'dotenv/config';
-import './lib/dbConnect.js';
+import connectDB from './lib/dbConnect.js';
 import { verifyUser } from './lib/middleware.js';
 import userRouter from './routes/user.route.js';
 import homeRouter from './routes/home.route.js';
