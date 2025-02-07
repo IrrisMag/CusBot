@@ -61,13 +61,21 @@ app.use((err, req, res, next) => {
   res.status(500).render('error', { message: 'Something went wrong!' });
 });
 
-// Optional: Start a local server only when not in production
-if (process.env.NODE_ENV !== 'production') {
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-  });
-}
+// Connect to MongoDB first, then start Express server
+(async () => {
+  try {
+    await connectDB();
+    if (process.env.NODE_ENV !== 'production') {
+      const port = process.env.PORT || 3000;
+      app.listen(port, () => {
+        console.log(`🚀 Server running on http://localhost:${port}`);
+      });
+    }
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+})();
 
 // Export the app for Vercel
 export default app;
